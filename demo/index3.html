@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
+	<script type="text/javascript" src="../tokenizer.js"></script>
+</head>
+<body>
+	<section class="main">   
+		
+		<input id="targetInput" type="text">
+		
+	</section>
+
+	<script type="text/javascript">
+		window.tokenInput = $('#targetInput').tokenizer({
+			onclick: function (word) { alert(word); },
+                        source:  function(word, suggest, request, callback) {
+                            $.ajax({
+                            url: "http://lookup.dbpedia.org/api/search/PrefixSearch",
+                            data: { MaxHits: 10, QueryString: word },
+                            dataType: "json",
+                            success: function (response) {
+                            suggest(response.results.map(function (m) {
+                                return m.label;
+                            }));
+                            }
+                            });
+                       }
+		});
+	</script>
+
+</body>
+</html>
