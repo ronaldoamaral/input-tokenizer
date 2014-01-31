@@ -115,13 +115,13 @@
 				}).on('click', '.'+ns+'-suggest-li', function () {
 					$.queue(eventQueue, []); // cancel blur event
 					input.val('');
-					push($(this).text());
+					push($(this).text(), $(this).attr('data-uri'));
 					suggest([]);
 					callback();
 				}).on('click', '.'+ns+'-token', function (event) {
 					if (options.onclick) { 
 						event.stopPropagation();
-						options.onclick($(this).children('.'+ns+'-token-label').text()); 
+						options.onclick($(this)); // Modificado para Retornar o Token, de forma a recuperar a URI do objeto
 					}
 				});
 			};
@@ -135,11 +135,11 @@
 				}
 				suggest([], '');
 			};
-			push = function (value) {
+			push = function (value, uri) {   // Modificado para receber a URI do Token data-uri
 				var
 				ns = options.namespace, 
 				pre = ns+'-token',
-				token = '<div class="'+pre+'" data-token="'+value+'">'+
+				token = '<div class="'+pre+'" data-token="'+value+'" data-uri="'+uri+'">'+
 				'<span class="'+pre+'-label">'+value.trim()+'</span>'+
 				'<span class="'+pre+'-x">'+options.xContent+'</span>'+
 				'</div>';
@@ -178,7 +178,7 @@
 				(options.callback || $.noop)(input);
 				return input;
 			};
-			suggest = function (words, word) {
+			suggest = function (words, uri_list, word) { // Modificado para receber a URI LIST dos Tokens
 				word = word === undefined ? input.val() : word;
 				var 
 				i, 
@@ -190,7 +190,7 @@
 				for (i = 0; word && i < words.length && list.length < limit; i++) {
 					if (!words[i].match(re1)) { continue; }
 					list.push('<li class="'+ns+'-suggest-li'+
-						(words[i].match(re2) ? ' '+ns+'-sel' : '')+'">'+words[i]+'</li>');
+						(words[i].match(re2) ? ' '+ns+'-sel' : '')+'" data-uri="'+uri_list[i]+'">'+words[i]+'</li>');
 				}
 				suggestions.children('ul')
 				.html(list.join(''))
